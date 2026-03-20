@@ -5,7 +5,8 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quantitative-trading-backend"
 version = "0.1.0"
-description = "Backend services for the quantitative trading MVP"
+# 保持技术标识符原文，但项目说明默认使用中文。
+description = "量化交易 MVP 后端服务"
 requires-python = ">=3.12"
 dependencies = [
   "alembic>=1.16,<2.0",

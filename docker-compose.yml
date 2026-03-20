@@ -1,3 +1,4 @@
+# Phase 1 基线编排：先打稳前后端、数据、缓存和反向代理的运行底座。
 services:
   postgres:
     image: postgres:16-alpine
@@ -72,7 +73,7 @@ services:
     build:
       context: ./frontend
       args:
-        NEXT_PUBLIC_APP_NAME: ${NEXT_PUBLIC_APP_NAME:-Quantitative Trading Console}
+        NEXT_PUBLIC_APP_NAME: ${NEXT_PUBLIC_APP_NAME:-量化交易控制台}
         NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-/api/v1}
     environment:
       NODE_ENV: production

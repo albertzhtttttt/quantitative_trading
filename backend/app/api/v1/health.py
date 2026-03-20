@@ -8,11 +8,13 @@ router = APIRouter(prefix="/health", tags=["health"])
 
 @router.get("/live", response_model=HealthResponse)
 def live() -> HealthResponse:
+    # live 检查只判断进程是否正常响应，不依赖外部组件状态。
     return HealthResponse(status="ok")
 
 
 @router.get("/ready", response_model=ReadyResponse)
 def ready(response: Response) -> ReadyResponse:
+    # ready 检查用于确认数据库和 Redis 已可访问，便于容器编排判断服务是否真正可用。
     dependencies = [
         DependencyStatus(name="postgres", ok=check_database()),
         DependencyStatus(name="redis", ok=check_redis()),

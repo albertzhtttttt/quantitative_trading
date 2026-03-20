@@ -1,4 +1,4 @@
-# Quantitative Trading
+# 量化交易系统
 
 一个面向加密货币市场的量化交易 MVP，优先完成回测闭环，再扩展到模拟盘，采用 FastAPI 后端、Next.js 前端和 Docker Compose 部署。
 

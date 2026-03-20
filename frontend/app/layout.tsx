@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 import '@/styles/globals.css'
 
-const appName = process.env.NEXT_PUBLIC_APP_NAME ?? 'Quantitative Trading Console'
+const appName = process.env.NEXT_PUBLIC_APP_NAME ?? '量化交易控制台'
 
 export const metadata: Metadata = {
   title: appName,
-  description: 'Crypto quantitative trading MVP control console.',
+  description: '面向加密货币量化交易 MVP 的控制台。',
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

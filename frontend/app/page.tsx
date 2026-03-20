@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-const appName = process.env.NEXT_PUBLIC_APP_NAME ?? 'Quantitative Trading Console'
+const appName = process.env.NEXT_PUBLIC_APP_NAME ?? '量化交易控制台'
 
 const highlights = [
   { label: '后端基线', value: 'FastAPI + SQLAlchemy 2' },
@@ -15,7 +15,7 @@ export default function HomePage() {
       <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-6 py-10 lg:px-10">
         <header className="flex items-center justify-between border-b border-white/10 pb-6">
           <div>
-            <p className="font-mono text-xs uppercase tracking-[0.32em] text-accent/90">quant console</p>
+            <p className="font-mono text-xs uppercase tracking-[0.32em] text-accent/90">量化控制台</p>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight lg:text-5xl">{appName}</h1>
           </div>
           <Link
@@ -31,7 +31,7 @@ export default function HomePage() {
           <div className="relative grid gap-10 lg:grid-cols-[1.4fr_0.8fr]">
             <div>
               <span className="inline-flex rounded-full border border-gold/40 bg-gold/10 px-3 py-1 font-mono text-xs uppercase tracking-[0.28em] text-gold">
-                phase 1 baseline
+                第一阶段基线
               </span>
               <h2 className="mt-6 max-w-3xl text-2xl font-semibold leading-tight lg:text-4xl">
                 先把工程底座打稳，再打通回测、模拟盘与云端部署闭环。
@@ -41,7 +41,7 @@ export default function HomePage() {
               </p>
             </div>
             <div className="rounded-[28px] border border-white/10 bg-panel/85 p-6 backdrop-blur">
-              <p className="font-mono text-xs uppercase tracking-[0.28em] text-slate-400">delivery baseline</p>
+              <p className="font-mono text-xs uppercase tracking-[0.28em] text-slate-400">交付基线</p>
               <ul className="mt-5 space-y-4 text-sm text-slate-200">
                 <li>统一环境变量与服务命名</li>
                 <li>后端 live / ready 健康检查</li>

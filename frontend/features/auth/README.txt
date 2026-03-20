@@ -1,1 +1,1 @@
-Auth feature placeholder for T06 login implementation.
+认证模块占位文件，用于承接 T06 的登录实现。
