@@ -1,6 +1,8 @@
 from functools import lru_cache
+from typing import Annotated
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import Field, field_validator
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -11,8 +13,24 @@ class Settings(BaseSettings):
     admin_password: str = "change-me-before-production"
     default_exchange: str = "binance"
     enable_live_trading: bool = False
+    session_cookie_name: str = "qt_session"
+    session_max_age: int = 86400
+    session_cookie_secure: bool = False
+    cors_allow_origins: Annotated[list[str], NoDecode] = Field(default_factory=list)
     database_url: str = "postgresql+psycopg://quant:quant_dev_password@postgres:5432/quantitative_trading"
     redis_url: str = "redis://redis:6379/0"
+
+    @field_validator("cors_allow_origins", mode="before")
+    @classmethod
+    def parse_cors_allow_origins(cls, value: object) -> list[str]:
+        # 开发环境允许通过逗号分隔环境变量配置少量前端 origin，便于本地跨域携带 Cookie 联调。
+        if value is None or value == "":
+            return []
+        if isinstance(value, str):
+            return [item.strip() for item in value.split(",") if item.strip()]
+        if isinstance(value, list):
+            return [str(item).strip() for item in value if str(item).strip()]
+        raise TypeError("cors_allow_origins must be a comma-separated string or list")
 
     model_config = SettingsConfigDict(
         env_file=".env",
