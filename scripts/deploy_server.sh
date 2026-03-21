@@ -45,6 +45,12 @@ cd ../frontend
 npm ci
 NEXT_PUBLIC_API_BASE_URL=/api/v1 npm run build
 
+# standalone server 运行时需要同时看到 public 和 .next/static；这里显式建立链接，避免静态资源 404。
+mkdir -p .next/standalone/.next
+rm -rf .next/standalone/.next/static .next/standalone/public
+ln -s "$(pwd)/.next/static" .next/standalone/.next/static
+ln -s "$(pwd)/public" .next/standalone/public
+
 # 统一重启对外入口和三类应用进程，确保前端、后端与 worker 都使用最新代码。
 systemctl restart quant-backend.service
 systemctl restart quant-frontend.service
