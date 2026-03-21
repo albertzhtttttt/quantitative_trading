@@ -15,7 +15,7 @@ REMOTE="${DEPLOY_USER}@${DEPLOY_HOST}"
 SSH_OPTS=("-o" "StrictHostKeyChecking=no")
 
 # 只上传当前 HEAD 的受版本控制文件，避免把本地 node_modules、虚拟环境和临时文件带上服务器。
-git -C "${REPO_ROOT}" archive --format=tar HEAD | ssh "${SSH_OPTS[@]}" "${REMOTE}" "mkdir -p '${DEPLOY_PATH}' && tar -xf - -C '${DEPLOY_PATH}'"
+git -C "${REPO_ROOT}" archive --format=tar HEAD | ssh "${SSH_OPTS[@]}" "${REMOTE}" "mkdir -p '${DEPLOY_PATH}' && tar -xf - -C '${DEPLOY_PATH}' && mkdir -p '${DEPLOY_PATH}/backups/postgres'"
 
 # 服务器端复用已存在的 .env、systemd 和 Nginx 配置，只负责更新代码、依赖、构建产物与服务进程。
 ssh "${SSH_OPTS[@]}" "${REMOTE}" bash <<EOF

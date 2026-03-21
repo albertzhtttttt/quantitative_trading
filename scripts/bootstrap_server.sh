@@ -32,7 +32,7 @@ sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='${POSTGRES_
   sudo -u postgres psql -c "CREATE DATABASE ${POSTGRES_DB} OWNER ${POSTGRES_USER};"
 sudo -u postgres psql -c "ALTER ROLE ${POSTGRES_USER} WITH LOGIN PASSWORD '${POSTGRES_PASSWORD}';"
 
-mkdir -p "${APP_ROOT}/backend" "${APP_ROOT}/frontend" "${APP_ROOT}/infra" "${APP_ROOT}/docs"
+mkdir -p "${APP_ROOT}/backend" "${APP_ROOT}/frontend" "${APP_ROOT}/infra" "${APP_ROOT}/docs" "${APP_ROOT}/scripts" "${APP_ROOT}/backups/postgres"
 
 # 预写后端环境变量模板，后续 deploy_server.sh 会直接复用，不需要再次交互输入。
 cat > "${APP_ROOT}/backend/.env" <<EOF

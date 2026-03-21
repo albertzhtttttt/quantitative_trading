@@ -137,6 +137,40 @@ curl -k https://47.119.136.200/api/v1/health/live
 curl -k -I https://47.119.136.200
 ```
 
+## 数据备份与恢复
+
+PostgreSQL 备份脚本：
+
+```bash
+bash scripts/backup_postgres.sh
+```
+
+恢复脚本：
+
+```bash
+bash scripts/restore_postgres.sh <backup-file>
+```
+
+服务器定时备份安装脚本：
+
+```bash
+bash scripts/install_backup_timer.sh
+```
+
+默认行为：
+
+- 备份目录：`/opt/quantitative_trading/backups/postgres`
+- 保留天数：`7`
+- 默认定时：每天 `03:45`
+
+查看备份 timer：
+
+```bash
+systemctl status quant-postgres-backup.service
+systemctl status quant-postgres-backup.timer
+systemctl list-timers --all | grep quant-postgres-backup
+```
+
 ## TLS 说明
 
 当前 HTTPS 使用自签名证书，浏览器会提示证书不受信任，但加密链路有效。
