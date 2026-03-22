@@ -64,7 +64,10 @@ EOF
 
 systemctl daemon-reload
 systemctl enable --now quant-runtime-health.timer
-systemctl start quant-runtime-health.service
 systemctl is-active quant-runtime-health.timer >/dev/null
+
+# 安装阶段只要求 timer 生效；即时全链路校验由 deploy_server.sh 直接执行，
+# 避免服务刚重启时的瞬时 502/404 把安装过程误判为失败。
+systemctl start quant-runtime-health.service || true
 systemctl status quant-runtime-health.service --no-pager -n 20 || true
 systemctl status quant-runtime-health.timer --no-pager -n 20 || true
