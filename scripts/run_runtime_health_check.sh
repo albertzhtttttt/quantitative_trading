@@ -21,9 +21,12 @@ mkdir -p "${LOG_DIR}"
 if "${CHECK_SCRIPT}" >"${OUTPUT_FILE}" 2>&1; then
   cat "${OUTPUT_FILE}"
   exit 0
+else
+  # 必须在 else 分支里立即读取原始退出码；如果等到 fi 之后再取，
+  # 拿到的会是 if 复合命令本身的返回值，导致失败日志被错误记录成 exit=0。
+  STATUS="$?"
 fi
 
-STATUS="$?"
 TIMESTAMP="$(date '+%Y-%m-%dT%H:%M:%S%z')"
 
 {
