@@ -71,7 +71,26 @@ systemctl is-active nginx >/dev/null
 
 # 每次部署后都刷新运行时健康检查定时器配置，并立即执行一次全链路校验。
 bash scripts/install_runtime_health_timer.sh
-bash scripts/check_runtime_health.sh
+
+# 服务刚重启后的前几秒内，Nginx 反代和 Next.js standalone 可能还在热身；
+# 这里做一个有限次重试，避免把短暂的 502/404 误判为部署失败。
+HEALTH_CHECK_OK=0
+for attempt in 1 2 3 4 5 6; do
+  if bash scripts/check_runtime_health.sh; then
+    HEALTH_CHECK_OK=1
+    break
+  fi
+  sleep 2
+  systemctl is-active quant-backend.service >/dev/null
+  systemctl is-active quant-frontend.service >/dev/null
+  systemctl is-active quant-worker.service >/dev/null
+  systemctl is-active nginx >/dev/null
+done
+
+if [ "${HEALTH_CHECK_OK}" != "1" ]; then
+  echo "部署后的运行时健康检查最终未通过。" >&2
+  exit 1
+fi
 
 echo "Deploy completed: https://${DEPLOY_HOST}"
 EOF
