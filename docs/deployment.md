@@ -69,7 +69,8 @@ bash scripts/deploy_server.sh
 4. 安装前端依赖并重新构建
 5. 修复 standalone 运行时静态资源链接
 6. 重启 backend / frontend / worker / nginx
-7. 验证本机健康检查
+7. 安装 / 刷新运行时健康检查 timer 与日志轮转配置
+8. 立即执行一次全链路健康检查
 
 可用环境变量：
 
@@ -99,6 +100,8 @@ bash scripts/bootstrap_server.sh
 - 生成自签名 TLS 证书
 - 写入 Nginx 配置
 - 写入 systemd 服务模板
+- 预创建 `/var/log/quantitative_trading`
+- 预写日志轮转配置
 - 预写后端 `.env`
 
 ## 数据库与管理员账号
@@ -169,6 +172,49 @@ bash scripts/install_backup_timer.sh
 systemctl status quant-postgres-backup.service
 systemctl status quant-postgres-backup.timer
 systemctl list-timers --all | grep quant-postgres-backup
+```
+
+恢复演练建议优先恢复到临时校验库，避免覆盖线上库：
+
+```bash
+TARGET_DATABASE=quantitative_trading_restore_check bash scripts/restore_postgres.sh /opt/quantitative_trading/backups/postgres/postgres-YYYYMMDD-HHMMSS.sql
+```
+
+如确需直接覆盖线上库，必须显式确认并设置：
+
+```bash
+ALLOW_PRODUCTION_RESTORE=1 bash scripts/restore_postgres.sh /opt/quantitative_trading/backups/postgres/postgres-YYYYMMDD-HHMMSS.sql
+```
+
+## 运行时健康检查与日志轮转
+
+安装运行时健康检查 timer：
+
+```bash
+bash scripts/install_runtime_health_timer.sh
+```
+
+默认行为：
+
+- 健康检查入口：`https://127.0.0.1/api/v1/health/ready`
+- 前端探测地址：`https://127.0.0.1/login`
+- 执行频率：开机后 `2` 分钟启动，之后每 `5` 分钟执行一次
+- 日志文件：`/var/log/quantitative_trading/runtime-health.log`
+- 日志轮转：`/etc/logrotate.d/quantitative_trading`，按天切分，保留 `14` 份压缩日志
+
+查看健康检查 timer：
+
+```bash
+systemctl status quant-runtime-health.service
+systemctl status quant-runtime-health.timer
+systemctl list-timers --all | grep quant-runtime-health
+journalctl -u quant-runtime-health.service -n 50 --no-pager
+```
+
+手动执行健康检查：
+
+```bash
+bash scripts/check_runtime_health.sh
 ```
 
 ## TLS 说明

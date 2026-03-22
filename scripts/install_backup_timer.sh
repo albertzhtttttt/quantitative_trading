@@ -49,5 +49,6 @@ EOF
 systemctl daemon-reload
 systemctl enable --now quant-postgres-backup.timer
 systemctl start quant-postgres-backup.service
-systemctl status quant-postgres-backup.service --no-pager -n 20
-systemctl status quant-postgres-backup.timer --no-pager -n 20
+systemctl is-active quant-postgres-backup.timer >/dev/null
+systemctl status quant-postgres-backup.service --no-pager -n 20 || true
+systemctl status quant-postgres-backup.timer --no-pager -n 20 || true

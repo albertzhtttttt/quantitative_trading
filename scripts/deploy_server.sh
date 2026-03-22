@@ -46,10 +46,16 @@ npm ci
 NEXT_PUBLIC_API_BASE_URL=/api/v1 npm run build
 
 # standalone server 运行时需要同时看到 public 和 .next/static；这里显式建立链接，避免静态资源 404。
+# 这里使用服务器绝对路径，避免 SSH heredoc 在本地提前展开 `$(pwd)` 后把宿主机路径写进远端符号链接。
 mkdir -p .next/standalone/.next
 rm -rf .next/standalone/.next/static .next/standalone/public
-ln -s "$(pwd)/.next/static" .next/standalone/.next/static
-ln -s "$(pwd)/public" .next/standalone/public
+ln -s "${DEPLOY_PATH}/frontend/.next/static" .next/standalone/.next/static
+if [ -d "${DEPLOY_PATH}/frontend/public" ]; then
+  ln -s "${DEPLOY_PATH}/frontend/public" .next/standalone/public
+fi
+
+cd ..
+chmod +x scripts/*.sh
 
 # 统一重启对外入口和三类应用进程，确保前端、后端与 worker 都使用最新代码。
 systemctl restart quant-backend.service
@@ -61,7 +67,10 @@ systemctl is-active quant-backend.service >/dev/null
 systemctl is-active quant-frontend.service >/dev/null
 systemctl is-active quant-worker.service >/dev/null
 systemctl is-active nginx >/dev/null
-curl --fail --silent http://127.0.0.1/api/v1/health/live >/dev/null
 
-echo "Deploy completed: http://${DEPLOY_HOST}"
+# 每次部署后都刷新运行时健康检查定时器配置，并立即执行一次全链路校验。
+bash scripts/install_runtime_health_timer.sh
+bash scripts/check_runtime_health.sh
+
+echo "Deploy completed: https://${DEPLOY_HOST}"
 EOF
