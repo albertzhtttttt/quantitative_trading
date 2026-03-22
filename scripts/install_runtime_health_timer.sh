@@ -19,7 +19,12 @@ TARGET_SCRIPT="${APP_ROOT}/scripts/check_runtime_health.sh"
 if [ "$(realpath "${SOURCE_SCRIPT}")" != "$(realpath -m "${TARGET_SCRIPT}")" ]; then
   cp "${SOURCE_SCRIPT}" "${TARGET_SCRIPT}"
 fi
-chmod +x "${TARGET_SCRIPT}"
+RUNNER_SOURCE_SCRIPT="${REPO_ROOT}/scripts/run_runtime_health_check.sh"
+RUNNER_TARGET_SCRIPT="${APP_ROOT}/scripts/run_runtime_health_check.sh"
+if [ "$(realpath "${RUNNER_SOURCE_SCRIPT}")" != "$(realpath -m "${RUNNER_TARGET_SCRIPT}")" ]; then
+  cp "${RUNNER_SOURCE_SCRIPT}" "${RUNNER_TARGET_SCRIPT}"
+fi
+chmod +x "${TARGET_SCRIPT}" "${RUNNER_TARGET_SCRIPT}"
 
 cat > "${SYSTEMD_DIR}/quant-runtime-health.service" <<EOF
 [Unit]
@@ -30,7 +35,8 @@ Wants=nginx.service quant-backend.service quant-frontend.service postgresql.serv
 [Service]
 Type=oneshot
 WorkingDirectory=${APP_ROOT}
-ExecStart=${APP_ROOT}/scripts/check_runtime_health.sh
+Environment=LOG_DIR=${LOG_DIR}
+ExecStart=${APP_ROOT}/scripts/run_runtime_health_check.sh
 StandardOutput=append:${LOG_DIR}/runtime-health.log
 StandardError=append:${LOG_DIR}/runtime-health.log
 EOF

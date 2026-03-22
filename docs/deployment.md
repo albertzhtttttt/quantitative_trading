@@ -180,6 +180,17 @@ systemctl list-timers --all | grep quant-postgres-backup
 TARGET_DATABASE=quantitative_trading_restore_check bash scripts/restore_postgres.sh /opt/quantitative_trading/backups/postgres/postgres-YYYYMMDD-HHMMSS.sql
 ```
 
+也可以直接执行自动化恢复演练脚本，它会恢复、校验并默认自动清理临时库：
+
+```bash
+bash scripts/verify_postgres_restore.sh /opt/quantitative_trading/backups/postgres/postgres-YYYYMMDD-HHMMSS.sql
+```
+
+可用环境变量：
+
+- `RESTORE_DATABASE`：覆盖默认临时校验库名
+- `KEEP_RESTORE_DB=1`：保留演练库，便于手动继续检查
+
 如确需直接覆盖线上库，必须显式确认并设置：
 
 ```bash
@@ -199,7 +210,8 @@ bash scripts/install_runtime_health_timer.sh
 - 健康检查入口：`https://127.0.0.1/api/v1/health/ready`
 - 前端探测地址：`https://127.0.0.1/login`
 - 执行频率：开机后 `2` 分钟启动，之后每 `5` 分钟执行一次
-- 日志文件：`/var/log/quantitative_trading/runtime-health.log`
+- 常规日志：`/var/log/quantitative_trading/runtime-health.log`
+- 失败告警日志：`/var/log/quantitative_trading/runtime-health-alert.log`
 - 日志轮转：`/etc/logrotate.d/quantitative_trading`，按天切分，保留 `14` 份压缩日志
 
 查看健康检查 timer：
@@ -215,6 +227,12 @@ journalctl -u quant-runtime-health.service -n 50 --no-pager
 
 ```bash
 bash scripts/check_runtime_health.sh
+```
+
+查看最近一次失败告警：
+
+```bash
+tail -n 50 /var/log/quantitative_trading/runtime-health-alert.log
 ```
 
 ## TLS 说明
