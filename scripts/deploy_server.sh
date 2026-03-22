@@ -18,7 +18,7 @@ SSH_OPTS=("-o" "StrictHostKeyChecking=no")
 git -C "${REPO_ROOT}" archive --format=tar HEAD | ssh "${SSH_OPTS[@]}" "${REMOTE}" "mkdir -p '${DEPLOY_PATH}' && tar -xf - -C '${DEPLOY_PATH}' && mkdir -p '${DEPLOY_PATH}/backups/postgres'"
 
 # 服务器端复用已存在的 .env、systemd 和 Nginx 配置，只负责更新代码、依赖、构建产物与服务进程。
-ssh "${SSH_OPTS[@]}" "${REMOTE}" bash <<EOF
+ssh "${SSH_OPTS[@]}" "${REMOTE}" "DEPLOY_PATH='${DEPLOY_PATH}' RUN_SERVER_TESTS='${RUN_SERVER_TESTS}' bash -s" <<'EOF'
 set -euo pipefail
 
 cd "${DEPLOY_PATH}"
